@@ -1,0 +1,593 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+/* MobileShop admin theme aligned with the storefront. */
+
+:root {
+    --bg-main: #0f0f13;
+    --bg-card: #1a1a24;
+    --bg-card-hover: #22222f;
+    --text-primary: #f1f1f5;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --primary: #6366f1;
+    --primary-light: #a5b4fc;
+}
+
+/* Base Body & Layout overrides */
+body,
+.wrapper,
+.content-wrapper,
+.main-header,
+.main-sidebar,
+.control-sidebar,
+.main-footer {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Jazzmin 3 uses the AdminLTE 4 app-* layout instead of the older wrappers. */
+html,
+body.theme-darkly.bg-body-tertiary,
+.app-content,
+.app-content-header,
+.bg-body-tertiary {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+.app-header,
+.app-footer,
+.app-sidebar,
+.sidebar-wrapper,
+.sidebar-brand {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.app-header .nav-link,
+.app-sidebar .nav-link,
+.app-sidebar .nav-header,
+.app-footer,
+.app-footer a,
+.app-content .breadcrumb,
+.app-content .breadcrumb-item {
+    color: var(--text-muted) !important;
+}
+
+.app-sidebar .nav-link:hover,
+.app-sidebar .nav-link.active {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    color: var(--primary-light) !important;
+}
+
+.app-sidebar .nav-link:hover .nav-icon,
+.app-sidebar .nav-link.active .nav-icon,
+.app-header .nav-link:hover {
+    color: var(--primary-light) !important;
+}
+
+.app-content-header h1,
+.app-content h1,
+.app-content h2,
+.app-content h3,
+.app-content label {
+    color: var(--text-primary) !important;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: "Inter", sans-serif !important;
+}
+
+/* Header & Sidebar */
+.main-header {
+    border-bottom: 1px solid var(--border-color) !important;
+}
+.main-header .nav-link {
+    color: var(--text-muted) !important;
+}
+.main-sidebar {
+    border-right: 1px solid var(--border-color) !important;
+}
+.brand-link {
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+.sidebar .nav-link p,
+.sidebar .nav-link i {
+    color: var(--text-muted) !important;
+}
+.sidebar .nav-link.active p,
+.sidebar .nav-link.active i {
+    color: var(--text-primary) !important;
+}
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Cards & Modules (The main white boxes in Jazzmin) */
+.card, .info-box, .module, #recent-actions-module {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    color: var(--text-primary) !important;
+}
+
+.card-header, .card-footer {
+    background: transparent !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.card-title, h1, h2, h3, h4, h5, h6, caption {
+    color: var(--text-primary) !important;
+}
+
+/* Table styling */
+table {
+    color: var(--text-muted) !important;
+}
+table th, table td {
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+table thead th {
+    background-color: var(--bg-card-hover) !important;
+    color: var(--text-muted) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+table tbody tr:nth-of-type(odd) {
+    background-color: rgba(255,255,255,0.02) !important;
+}
+table tbody tr:hover {
+    background-color: rgba(255,255,255,0.05) !important;
+}
+a {
+    color: var(--primary-light) !important;
+}
+a:hover {
+    color: #c7d2fe !important;
+}
+
+/* Forms & Inputs */
+.form-control, input, select, textarea, .select2-container--default .select2-selection--single {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+.select2-container--default .select2-results__option {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--primary) !important;
+}
+
+.form-control::placeholder,
+label,
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.content-header,
+.main-footer,
+.card-header,
+.card-footer,
+.modal-content,
+.dropdown-menu {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.dropdown-item {
+    color: var(--text-muted) !important;
+}
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-primary) !important;
+}
+
+.page-link {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--primary-light) !important;
+}
+.page-item.active .page-link,
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+}
+
+/* Modals & Popups */
+.modal-content, .popover, .dropdown-menu {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+.dropdown-item {
+    color: var(--text-primary) !important;
+}
+.dropdown-item:hover {
+    background-color: rgba(255,255,255,0.05) !important;
+}
+
+/* Badges */
+.badge-success { background-color: rgba(16, 185, 129, 0.2) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
+.badge-warning { background-color: rgba(245, 158, 11, 0.2) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.3) !important; }
+.badge-danger { background-color: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; }
+.badge-info { background-color: rgba(56, 189, 248, 0.2) !important; color: #7dd3fc !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; }
+.badge-primary { background-color: rgba(99, 102, 241, 0.2) !important; color: #818cf8 !important; border: 1px solid rgba(99, 102, 241, 0.3) !important; }
+
+/* Dashboard Recent Actions module fix */
+.timeline > div > .timeline-item {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+.timeline > div > .timeline-item > .time {
+    color: var(--text-muted) !important;
+}
+
+/* Shared storefront styling for every Jazzmin admin screen. */
+.app-header {
+    background: var(--bg-main) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+.app-sidebar {
+    background: var(--bg-card) !important;
+    border-right: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+.sidebar-brand {
+    background: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.app-sidebar .nav-link,
+.app-sidebar .nav-header,
+.app-header .nav-link {
+    color: var(--text-muted) !important;
+}
+
+.app-sidebar .nav-link:hover,
+.app-sidebar .nav-link.active,
+.app-sidebar .nav-link:hover .nav-icon,
+.app-sidebar .nav-link.active .nav-icon,
+.app-header .nav-link:hover {
+    color: var(--primary-light) !important;
+}
+
+.app-sidebar .nav-link:hover,
+.app-sidebar .nav-link.active {
+    background: rgba(99, 102, 241, 0.15) !important;
+    border-radius: 8px;
+}
+
+.app-content,
+.app-content-header,
+.app-main,
+.app-footer {
+    background: var(--bg-main) !important;
+}
+
+.app-content > .container-fluid,
+.app-content-header > .container-fluid {
+    max-width: 1280px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.app-content-header {
+    padding-top: 28px !important;
+    padding-bottom: 12px !important;
+}
+
+.app-content-header h1,
+.app-content-header h3,
+.app-content h1,
+.app-content h2,
+.app-content h3,
+.app-content h4,
+.app-content h5,
+.app-content h6,
+.app-content label,
+.app-content .form-label {
+    color: var(--text-primary) !important;
+}
+
+.app-content .breadcrumb {
+    background: var(--bg-card-hover) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.app-content .breadcrumb-item,
+.app-content .breadcrumb-item.active {
+    color: var(--text-muted) !important;
+}
+
+.app-content .breadcrumb-item a,
+.app-content a {
+    color: var(--primary-light) !important;
+}
+
+.app-content a:hover {
+    color: #c7d2fe !important;
+}
+
+.card,
+.info-box,
+.small-box,
+.module,
+.callout,
+.modal-content,
+.popover,
+.dropdown-menu {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    color: var(--text-primary) !important;
+}
+
+.card-header,
+.card-footer {
+    background: transparent !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.app-content .module.changelist {
+    padding: 0 !important;
+    overflow: visible;
+}
+
+.module.changelist .change-list-actions {
+    padding-bottom: 12px !important;
+}
+
+.module.changelist .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    margin-bottom: 0;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-muted) !important;
+}
+
+.module.changelist > .row > .col-12 > .card {
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.module.changelist .card-body {
+    padding: 0 !important;
+}
+
+.table-responsive {
+    background: transparent !important;
+    border-radius: inherit;
+}
+
+.app-content .table,
+.app-content table {
+    margin-bottom: 0;
+    color: var(--text-primary) !important;
+}
+
+.app-content .table thead th,
+.app-content table thead th {
+    padding: 12px 16px;
+    background: var(--bg-card-hover) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-dim) !important;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.app-content .table tbody td,
+.app-content .table tbody th,
+.app-content table tbody td,
+.app-content table tbody th {
+    padding: 12px 16px;
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+    vertical-align: middle;
+}
+
+.app-content .table-striped > tbody > tr:nth-of-type(odd) > *,
+.app-content table tbody tr:nth-of-type(odd) > * {
+    background: #191922 !important;
+    color: var(--text-primary) !important;
+}
+
+.app-content .table-hover > tbody > tr:hover > *,
+.app-content table tbody tr:hover > * {
+    background: var(--bg-card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+.app-content .table a,
+.app-content table a {
+    color: var(--primary-light) !important;
+    font-weight: 600;
+}
+
+.app-content .form-control,
+.app-content .form-select,
+.app-content input,
+.app-content select,
+.app-content textarea,
+.app-header .form-control,
+.app-header input,
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    min-height: 40px;
+    background-color: var(--bg-card-hover) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 9px !important;
+    color: var(--text-primary) !important;
+}
+
+.app-content .form-control::placeholder,
+.app-header .form-control::placeholder,
+.app-content input::placeholder {
+    color: var(--text-dim) !important;
+    opacity: 1;
+}
+
+.app-content .form-control:focus,
+.app-content .form-select:focus,
+.app-content input:focus,
+.app-content select:focus,
+.app-content textarea:focus,
+.app-header .form-control:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+.app-content select option,
+.select2-container--default .select2-results__option {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+.select2-dropdown {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    color: var(--text-primary) !important;
+    line-height: 38px;
+}
+
+.help-block,
+.helptext,
+.form-text,
+.app-content .text-muted,
+.app-content .help-block {
+    color: var(--text-muted) !important;
+}
+
+.app-content .btn,
+.app-header .btn {
+    border-radius: 9px !important;
+    font-weight: 600;
+}
+
+.app-content .btn-primary,
+.app-content .page-item.active .page-link,
+.app-content .btn-info {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+}
+
+.app-content .btn-primary:hover,
+.app-content .btn-info:hover {
+    background: var(--primary-dark, #4f46e5) !important;
+    border-color: var(--primary-dark, #4f46e5) !important;
+}
+
+.app-content .btn-success {
+    background: #059669 !important;
+    border-color: #059669 !important;
+    color: #fff !important;
+}
+
+.app-content .btn-secondary,
+.app-content .btn-default,
+.app-content .page-link {
+    background: var(--bg-card-hover) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-muted) !important;
+}
+
+.app-content .btn-danger {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+    color: #fca5a5 !important;
+}
+
+.app-content .badge-secondary,
+.app-content .badge-muted {
+    background: var(--bg-card-hover) !important;
+    color: var(--text-muted) !important;
+}
+
+.app-content .alert,
+.app-content .messages .alert {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    border-radius: 10px;
+    color: var(--text-primary) !important;
+}
+
+.app-content .pagination {
+    gap: 4px;
+}
+
+.app-content .page-item.active .page-link {
+    color: #fff !important;
+}
+
+.app-footer {
+    border-top: 1px solid var(--border-color) !important;
+    color: var(--text-muted) !important;
+}
+
+.login-page,
+.login-box,
+.login-logo,
+.login-card-body {
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+.login-box .card,
+.login-card-body {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+}
+
+@media (max-width: 768px) {
+    .app-content > .container-fluid,
+    .app-content-header > .container-fluid {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .app-content-header {
+        padding-top: 20px !important;
+    }
+
+    .module.changelist .actions {
+        align-items: stretch;
+    }
+}

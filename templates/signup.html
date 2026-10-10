@@ -1,0 +1,75 @@
+{% extends 'BASE.html' %}
+{% block title %}Sign Up – MobileShop{% endblock %}
+{% block content %}
+
+<style>
+.auth-wrap {
+    min-height: calc(100vh - 68px); display: flex; align-items: center; justify-content: center;
+    padding: 40px 24px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 60%);
+}
+.auth-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px; width: 100%; max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+}
+.auth-logo { text-align: center; margin-bottom: 28px; }
+.auth-logo-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 12px;
+}
+.auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 6px; }
+.auth-sub { color: var(--text-muted); text-align: center; font-size: 14px; margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+.form-control {
+    width: 100%; padding: 11px 14px; background: var(--bg-card2);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+.errorlist { list-style: none; padding: 0; margin: 4px 0 0; }
+.errorlist li { color: #fca5a5; font-size: 12px; }
+.auth-divider { text-align: center; color: var(--text-dim); font-size: 13px; margin: 16px 0; }
+.auth-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+.auth-footer a { color: var(--primary-light); text-decoration: none; font-weight: 600; }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="auth-logo-icon">📱</div>
+        </div>
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-sub">Join MobileShop to start shopping</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <input type="{{ field.field.widget.input_type }}"
+                       name="{{ field.html_name }}"
+                       id="{{ field.id_for_label }}"
+                       class="form-control"
+                       placeholder="{{ field.label }}"
+                       {% if field.value %}value="{{ field.value }}"{% endif %}>
+                {% if field.errors %}
+                <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:13px;">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'signin' %}">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

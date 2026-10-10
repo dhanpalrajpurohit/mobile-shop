@@ -1,0 +1,31 @@
+{% extends "manager/base.html" %}
+{% block page_title %}Order INV-{{ order.id|stringformat:"05d" }}{% endblock %}
+{% block page_subtitle %}Update fulfilment status and review order details.{% endblock %}
+{% block page_icon %}fa-box{% endblock %}
+{% block panel_content %}
+<section class="manager-card manager-form-card">
+    <h2 class="manager-section-title"><i class="fas fa-user"></i> Customer</h2>
+    <p>{{ order.user.get_full_name|default:order.user.username }}<br><small>{{ order.user.email }} · {{ order.phone }}</small></p>
+    <h2 class="manager-section-title"><i class="fas fa-location-dot"></i> Delivery address</h2>
+    <p>{{ order.shipping_address|linebreaksbr }}</p>
+    {% if order.notes %}<h2 class="manager-section-title"><i class="fas fa-comment"></i> Notes</h2><p>{{ order.notes|linebreaksbr }}</p>{% endif %}
+    <h2 class="manager-section-title"><i class="fas fa-receipt"></i> Items</h2>
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Product</th><th>Quantity</th><th>Unit price</th><th>Subtotal</th></tr></thead>
+            <tbody>{% for item in order.items.all %}<tr><td>{{ item.product.productName }}</td><td>{{ item.quantity }}</td><td>₹{{ item.price|floatformat:0 }}</td><td>₹{{ item.subtotal|floatformat:0 }}</td></tr>{% endfor %}</tbody>
+            <tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>₹{{ order.total_amount|floatformat:0 }}</strong></td></tr></tfoot>
+        </table>
+    </div>
+    <form method="post" class="manager-form-actions">
+        {% csrf_token %}
+        <div class="manager-field">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {{ form.status.errors }}
+        </div>
+        <button class="btn btn-primary" type="submit">Save status</button>
+        <a class="btn btn-outline" href="{% url 'admin_panel_orders' %}">Back to orders</a>
+    </form>
+</section>
+{% endblock %}

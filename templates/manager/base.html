@@ -1,0 +1,26 @@
+{% extends "BASE.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/manager_panel.css' %}">
+{% endblock %}
+{% block content %}
+<main class="manager-page">
+    <header class="manager-heading">
+        <div>
+            <h1><i class="fas {% block page_icon %}fa-gauge-high{% endblock %}"></i> {% block page_title %}Admin Panel{% endblock %}</h1>
+            <p>{% block page_subtitle %}Manage your MobileShop storefront.{% endblock %}</p>
+        </div>
+        {% block heading_action %}{% endblock %}
+    </header>
+
+    <nav class="manager-tabs" aria-label="Admin navigation">
+        <a href="{% url 'admin_panel_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_panel_dashboard' %}active{% endif %}"><i class="fas fa-gauge-high"></i> Dashboard</a>
+        <a href="{% url 'admin_panel_products' %}" class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-mobile-alt"></i> Products</a>
+        <a href="{% url 'admin_panel_brands' %}" class="{% if 'brand' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-tags"></i> Brands</a>
+        <a href="{% url 'admin_panel_orders' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-box"></i> Orders</a>
+        <a href="{% url 'admin_sales_report' %}" class="{% if request.resolver_match.url_name == 'admin_sales_report' %}active{% endif %}"><i class="fas fa-chart-bar"></i> Sales report</a>
+    </nav>
+
+    {% block panel_content %}{% endblock %}
+</main>
+{% endblock %}

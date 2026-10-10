@@ -1,0 +1,400 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* Match the client storefront's charcoal and indigo theme. */
+:root {
+    --shop-primary: #6366f1;
+    --shop-primary-light: #a5b4fc;
+    --shop-bg: #0f0f13;
+    --shop-bg-card: #1a1a24;
+    --shop-border: rgba(255,255,255,0.08);
+    --shop-text: #f1f1f5;
+    --shop-text-muted: #9ca3af;
+    --shop-text-dim: #6b7280;
+}
+body, .content-wrapper, .main-header, .main-sidebar, .control-sidebar {
+    background: var(--shop-bg) !important;
+    color: var(--shop-text) !important;
+}
+.main-header {
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.brand-link {
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--shop-bg-card) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--shop-border) !important;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: none;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    margin-bottom: 24px;
+}
+.glass-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.4) !important;
+}
+.glass-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.glass-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--shop-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.glass-title i {
+    font-size: 18px;
+    background: -webkit-linear-gradient(135deg, #6366f1, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* KPIs */
+.kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--shop-text-dim); font-weight: 700; margin-bottom: 8px; }
+.kpi-value { font-size: 32px; font-weight: 800; color: var(--shop-text); margin-bottom: 0; line-height: 1; }
+.kpi-icon { 
+    width: 48px; height: 48px; border-radius: 12px; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: white; float: right; margin-top: -30px;
+}
+.kpi-icon.blue { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.kpi-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+.kpi-icon.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.kpi-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+/* Charts */
+.chart-container { position: relative; height: 280px; width: 100%; }
+.chart-container.tall { height: 350px; }
+
+/* Tables */
+.glass-table { width: 100%; border-collapse: collapse; }
+.glass-table th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--shop-text-dim); border-bottom: 1px solid var(--shop-border); }
+.glass-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--shop-border); vertical-align: middle; color: var(--shop-text-muted); }
+.glass-table tr:hover td { background: rgba(255,255,255,0.02); }
+.glass-table tr:last-child td { border-bottom: none; }
+.container-fluid[style*="padding: 24px"] { max-width: 1280px; margin: 0 auto; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 24px;">
+    <div class="row mb-2">
+        <div class="col-12">
+            <h2 style="font-weight: 800; font-size: 28px; margin-bottom: 30px; color: var(--shop-text);">
+                <i class="fas fa-chart-line" style="color: #6366f1;"></i> Executive Dashboard
+            </h2>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="glass-card">
+                <div class="kpi-title">Total Revenue</div>
+                <div class="kpi-value">₹{{ total_revenue|floatformat:0 }}</div>
+                <div class="kpi-icon blue"><i class="fas fa-wallet"></i></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="glass-card">
+                <div class="kpi-title">Total Orders</div>
+                <div class="kpi-value">{{ total_orders }}</div>
+                <div class="kpi-icon green"><i class="fas fa-shopping-bag"></i></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="glass-card">
+                <div class="kpi-title">Customers</div>
+                <div class="kpi-value">{{ total_users }}</div>
+                <div class="kpi-icon purple"><i class="fas fa-users"></i></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="glass-card">
+                <div class="kpi-title">Products</div>
+                <div class="kpi-value">{{ total_products }}</div>
+                <div class="kpi-icon orange"><i class="fas fa-box-open"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1: Trends & Distribution -->
+    <div class="row">
+        <!-- Chart 1: Revenue Trend -->
+        <div class="col-lg-8">
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h3 class="glass-title"><i class="fas fa-chart-area"></i> Revenue & Order Trends (6 Months)</h3>
+                </div>
+                <div class="chart-container tall">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Order Status -->
+        <div class="col-lg-4">
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h3 class="glass-title"><i class="fas fa-chart-pie"></i> Order Status Breakdown</h3>
+                </div>
+                <div class="chart-container tall">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Financials & Products -->
+    <div class="row">
+        <!-- Chart 3: Top Products by Revenue -->
+        <div class="col-lg-8">
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h3 class="glass-title"><i class="fas fa-trophy"></i> Top Products by Revenue</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Payment Methods -->
+        <div class="col-lg-4">
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h3 class="glass-title"><i class="fas fa-credit-card"></i> Payment Methods</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="glass-card">
+                <div class="glass-header">
+                    <h3 class="glass-title"><i class="fas fa-clock"></i> Recent Orders</h3>
+                    <a href="{% url 'admin:products_order_changelist' %}" class="btn btn-sm" style="background:#6366f1;color:white;border-radius:6px;">View All Orders</a>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="glass-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total Amount</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td><a href="{% url 'admin:products_order_change' order.id %}" style="color:#a5b4fc;font-weight:700;">INV-{{ order.id|stringformat:"05d" }}</a></td>
+                                <td>
+                                    <div style="font-weight:600;color:#f1f1f5">{{ order.user.get_full_name|default:order.user.username }}</div>
+                                    <div style="font-size:12px;color:#6b7280">{{ order.user.email }}</div>
+                                </td>
+                                <td>{{ order.order_date|date:"d M Y, h:i A" }}</td>
+                                <td>{{ order.items.count }}</td>
+                                <td><strong style="color:#10b981">₹{{ order.total_amount|floatformat:0 }}</strong></td>
+                                <td>
+                                    {% if order.payment_status == 'paid' %}<span style="background:rgba(16,185,129,0.2);color:#34d399;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Paid</span>
+                                    {% else %}<span style="background:rgba(245,158,11,0.2);color:#fbbf24;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">{{ order.payment_status|capfirst }}</span>{% endif %}
+                                </td>
+                                <td>
+                                    {% if order.status == 'delivered' %}<span style="background:rgba(16,185,129,0.2);color:#34d399;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Delivered</span>
+                                    {% elif order.status == 'shipped' %}<span style="background:rgba(99,102,241,0.2);color:#a5b4fc;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Shipped</span>
+                                    {% elif order.status == 'confirmed' %}<span style="background:rgba(99,102,241,0.2);color:#818cf8;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Confirmed</span>
+                                    {% elif order.status == 'cancelled' %}<span style="background:rgba(239,68,68,0.2);color:#f87171;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Cancelled</span>
+                                    {% else %}<span style="background:rgba(245,158,11,0.2);color:#fbbf24;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">Pending</span>{% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#6b7280">No recent orders found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Chart.defaults.color = '#9ca3af';
+    Chart.defaults.font.family = '"Inter", sans-serif';
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(26, 26, 36, 0.95)';
+    Chart.defaults.plugins.tooltip.titleColor = '#f1f1f5';
+    Chart.defaults.plugins.tooltip.bodyColor = '#9ca3af';
+    Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.1)';
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+    Chart.defaults.plugins.tooltip.padding = 12;
+
+    const gridColor = 'rgba(255,255,255,0.08)';
+
+    // 1. Revenue & Orders Trend (Line + Bar)
+    const revCtx = document.getElementById('revenueChart').getContext('2d');
+    
+    let gradientFill = revCtx.createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+    gradientFill.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+    new Chart(revCtx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [
+                {
+                    label: 'Revenue (₹)',
+                    data: {{ revenue_data|safe }},
+                    borderColor: '#6366f1',
+                    backgroundColor: gradientFill,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y',
+                    pointBackgroundColor: '#1a1a24',
+                    pointBorderColor: '#6366f1',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Orders',
+                    data: {{ order_data|safe }},
+                    type: 'bar',
+                    backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                    borderColor: '#10b981',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                y: { type: 'linear', display: true, position: 'left',
+                     title: { display: true, text: 'Revenue (₹)', color: '#9ca3af' },
+                     grid: { color: gridColor }, ticks: { color: '#9ca3af' } },
+                y1: { type: 'linear', display: true, position: 'right',
+                      title: { display: true, text: 'Orders', color: '#9ca3af' },
+                      grid: { drawOnChartArea: false }, ticks: { color: '#9ca3af' } },
+                x: { grid: { color: gridColor }, ticks: { color: '#9ca3af' } }
+            },
+            plugins: { legend: { position: 'top', labels: { color: '#9ca3af' } } }
+        }
+    });
+
+    // 2. Order Status Chart (Doughnut)
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusCounts = {{ status_counts|safe }};
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],
+            datasets: [{
+                data: [
+                    statusCounts['pending'] || 0,
+                    statusCounts['confirmed'] || 0,
+                    statusCounts['shipped'] || 0,
+                    statusCounts['delivered'] || 0,
+                    statusCounts['cancelled'] || 0
+                ],
+                backgroundColor: ['#f59e0b', '#8b5cf6', '#3b82f6', '#10b981', '#ef4444'],
+                borderWidth: 2,
+                borderColor: '#1a1a24',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: { 
+                legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 20 } }
+            }
+        }
+    });
+
+    // 3. Top Products by Revenue (Bar)
+    const prodCtx = document.getElementById('productsChart').getContext('2d');
+    new Chart(prodCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ top_products_names|safe }},
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: {{ top_products_revenue|safe }},
+                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                borderColor: '#6366f1',
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y', // horizontal bar chart
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: '#9ca3af' } },
+                y: { grid: { display: false }, ticks: { color: '#f1f1f5', font: { weight: '600' } } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 4. Payment Methods (Pie)
+    const payCtx = document.getElementById('paymentChart').getContext('2d');
+    const payCounts = {{ payment_counts|safe }};
+    new Chart(payCtx, {
+        type: 'pie',
+        data: {
+            labels: ['COD (Cash on Delivery)', 'Card', 'Online (UPI/GPay)'],
+            datasets: [{
+                data: [
+                    payCounts['cod'] || 0,
+                    payCounts['card'] || 0,
+                    payCounts['online'] || 0
+                ],
+                backgroundColor: ['#f43f5e', '#6366f1', '#14b8a6'],
+                borderWidth: 2,
+                borderColor: '#1a1a24',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { 
+                legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 20 } }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "manager/base.html" %}
+{% block page_title %}Orders{% endblock %}
+{% block page_subtitle %}Review customer orders and update their fulfilment status.{% endblock %}
+{% block page_icon %}fa-box{% endblock %}
+{% block panel_content %}
+<div class="manager-toolbar">
+    <form method="get">
+        <input type="search" name="q" value="{{ query }}" placeholder="Customer, email, or phone" aria-label="Search orders">
+        <select name="status" aria-label="Filter orders by status">
+            <option value="">All statuses</option>
+            {% for value, label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Filter</button>
+    </form>
+</div>
+<section class="manager-card">
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Items</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>INV-{{ order.id|stringformat:"05d" }}</strong></td>
+                    <td>{{ order.user.get_full_name|default:order.user.username }}<small>{{ order.user.email }}</small></td>
+                    <td>{{ order.order_date|date:"d M Y, h:i A" }}</td>
+                    <td>{{ order.items.count }}</td>
+                    <td><strong>₹{{ order.total_amount|floatformat:0 }}</strong></td>
+                    <td>{{ order.get_payment_method_display }}<small>{{ order.payment_status|capfirst }}</small></td>
+                    <td><span class="badge {% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% elif order.status == 'pending' %}badge-warning{% else %}badge-primary{% endif %}">{{ order.get_status_display }}</span></td>
+                    <td><a class="btn btn-outline btn-sm" href="{% url 'admin_panel_order_update' order.id %}">Manage</a></td>
+                </tr>
+                {% empty %}<tr><td class="manager-empty" colspan="8">No orders match these filters.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

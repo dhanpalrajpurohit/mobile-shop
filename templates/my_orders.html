@@ -1,0 +1,111 @@
+{% extends 'BASE.html' %}
+{% block title %}My Orders – MobileShop{% endblock %}
+{% block content %}
+
+<style>
+.orders-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+.page-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+.order-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+    transition: border-color 0.2s;
+}
+.order-card:hover { border-color: rgba(99,102,241,0.3); }
+.order-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.order-id { font-size: 16px; font-weight: 700; }
+.order-date { font-size: 12px; color: var(--text-dim); }
+.order-items { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.order-item-thumb {
+    background: var(--bg-card2); border-radius: 8px; padding: 8px;
+    display: flex; align-items: center; justify-content: center; width: 56px; height: 56px;
+}
+.order-item-thumb img { max-width: 44px; max-height: 44px; object-fit: contain; }
+.order-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.order-total { font-size: 18px; font-weight: 800; }
+.status-pill {
+    padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.status-pending { background: rgba(245,158,11,0.2); color: #fcd34d; }
+.status-confirmed { background: rgba(99,102,241,0.2); color: var(--primary-light); }
+.status-shipped { background: rgba(59,130,246,0.2); color: #93c5fd; }
+.status-delivered { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.status-cancelled { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.empty-state { text-align: center; padding: 80px 20px; }
+.empty-state i { font-size: 64px; color: var(--border); display: block; margin-bottom: 16px; }
+</style>
+
+<div class="orders-wrap">
+    <h1 class="page-title">
+        <i class="fas fa-box" style="color:var(--primary)"></i>
+        My Orders
+    </h1>
+
+    {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+        <div class="order-header">
+            <div>
+                <div class="order-id">Order #INV-{{ order.id|stringformat:"05d" }}</div>
+                <div class="order-date">{{ order.order_date|date:"d M Y, h:i A" }}</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span class="status-pill status-{{ order.status }}">
+                    {% if order.status == 'pending' %}<i class="fas fa-clock"></i>
+                    {% elif order.status == 'confirmed' %}<i class="fas fa-check"></i>
+                    {% elif order.status == 'shipped' %}<i class="fas fa-truck"></i>
+                    {% elif order.status == 'delivered' %}<i class="fas fa-box-open"></i>
+                    {% else %}<i class="fas fa-times"></i>{% endif %}
+                    {{ order.get_status_display }}
+                </span>
+                <span class="badge {% if order.payment_status == 'paid' %}badge-success{% else %}badge-warning{% endif %}">
+                    {{ order.payment_status|capfirst }}
+                </span>
+            </div>
+        </div>
+
+        <div class="order-items">
+            {% for item in order.items.all %}
+            <div title="{{ item.product.productName }} ×{{ item.quantity }}">
+                <div class="order-item-thumb">
+                    <img src="{{ item.product.productImage.url }}" alt="{{ item.product.productName }}">
+                </div>
+            </div>
+            {% endfor %}
+            {% with count=order.items.count %}
+            {% if count > 4 %}
+            <div class="order-item-thumb" style="background:var(--bg-card2);font-size:12px;color:var(--text-muted)">
+                +{{ count|add:"-4" }}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="order-footer">
+            <div>
+                <div style="font-size:12px;color:var(--text-muted)">{{ order.items.count }} item{{ order.items.count|pluralize }} · {{ order.get_payment_method_display }}</div>
+                <div class="order-total">₹{{ order.total_amount|floatformat:0 }}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline btn-sm">
+                    <i class="fas fa-eye"></i> View
+                </a>
+                <a href="{% url 'generate_invoice' order.id %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-file-pdf"></i> Invoice
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <h3 style="color:var(--text-muted);margin-bottom:8px">No orders yet</h3>
+        <p style="color:var(--text-dim);margin-bottom:20px">Start shopping to see your orders here.</p>
+        <a href="{% url 'index' %}" class="btn btn-primary">
+            <i class="fas fa-mobile-alt"></i> Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

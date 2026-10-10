@@ -1,0 +1,15 @@
+{% extends "BASE.html" %}
+{% block title %}Logged Out – MobileShop{% endblock %}
+{% block content %}
+<div style="min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:40px 24px;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.1) 0%,transparent 60%)">
+    <div style="text-align:center;max-width:400px">
+        <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--primary),#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px">👋</div>
+        <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:10px">See you soon!</h1>
+        <p style="color:var(--text-muted);margin-bottom:28px">You've been logged out successfully.</p>
+        <div style="display:flex;gap:10px;justify-content:center">
+            <a href="{% url 'index' %}" class="btn btn-primary"><i class="fas fa-home"></i> Go Home</a>
+            <a href="{% url 'signin' %}" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Sign In Again</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

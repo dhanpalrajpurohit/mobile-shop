@@ -1,0 +1,25 @@
+{% extends "manager/base.html" %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block page_subtitle %}Enter the product information for your storefront.{% endblock %}
+{% block page_icon %}fa-mobile-alt{% endblock %}
+{% block panel_content %}
+<section class="manager-card manager-form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="manager-form-grid">
+            {% for field in form %}
+            <div class="manager-field {% if field.name == 'productDesc' or field.name == 'productImage' %}full-width{% endif %}">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="helptext">{{ field.help_text }}</small>{% endif %}
+                {{ field.errors }}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="manager-form-actions">
+            <button class="btn btn-primary" type="submit">Save product</button>
+            <a class="btn btn-outline" href="{% url 'admin_panel_products' %}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

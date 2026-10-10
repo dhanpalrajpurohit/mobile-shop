@@ -1,0 +1,20 @@
+{% extends "manager/base.html" %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block page_subtitle %}Create or update a product brand.{% endblock %}
+{% block page_icon %}fa-tags{% endblock %}
+{% block panel_content %}
+<section class="manager-card manager-form-card">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="manager-field">
+            {{ field.label_tag }}{{ field }}{{ field.errors }}
+        </div>
+        {% endfor %}
+        <div class="manager-form-actions">
+            <button class="btn btn-primary" type="submit">Save brand</button>
+            <a class="btn btn-outline" href="{% url 'admin_panel_brands' %}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends 'BASE.html' %}
+{% block title %}{{ product.productName }} – MobileShop{% endblock %}
+{% block content %}
+
+<style>
+.detail-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+.breadcrumb { display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 13px; margin-bottom: 32px; }
+.breadcrumb a { color: var(--primary-light); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.product-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; margin-bottom: 56px; }
+@media(max-width:768px){ .product-grid { grid-template-columns: 1fr; gap: 24px; } }
+.product-img-main {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 340px;
+}
+.product-img-main img { max-height: 280px; max-width: 100%; object-fit: contain; }
+.product-info {}
+.product-brand-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3);
+    color: var(--primary-light); padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; margin-bottom: 12px;
+}
+.product-title { font-size: clamp(1.4rem,3vw,2rem); font-weight: 800; margin-bottom: 8px; }
+.product-spec-tag {
+    color: var(--text-muted); font-size: 14px; margin-bottom: 16px;
+}
+.rating-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+}
+.stars-lg { color: var(--accent); font-size: 16px; }
+.rating-text { font-size: 13px; color: var(--text-muted); }
+.price-big { font-size: 2.2rem; font-weight: 800; color: var(--text); margin-bottom: 24px; }
+.price-big span { font-size: 1rem; font-weight: 500; color: var(--text-muted); }
+.stock-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    margin-bottom: 20px;
+}
+.in-stock { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+.out-stock { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.product-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+.desc-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.desc-title { font-size: 13px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+.desc-text { color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+
+/* Reviews */
+.reviews-section { margin-top: 48px; }
+.section-heading { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+.review-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+    transition: border-color 0.2s;
+}
+.review-card:hover { border-color: rgba(99,102,241,0.3); }
+.review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.reviewer { display: flex; align-items: center; gap: 10px; }
+.reviewer-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: white;
+}
+.reviewer-name { font-size: 14px; font-weight: 600; }
+.review-date { font-size: 12px; color: var(--text-dim); }
+.review-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.review-body { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+/* Add Review Form */
+.review-form-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 28px;
+}
+.stars-picker { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; margin-bottom: 14px; }
+.stars-picker input { display: none; }
+.stars-picker label { font-size: 28px; color: var(--text-dim); cursor: pointer; transition: color 0.15s; }
+.stars-picker input:checked ~ label,
+.stars-picker label:hover,
+.stars-picker label:hover ~ label { color: var(--accent); }
+</style>
+
+<div class="detail-wrap">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="{% url 'index' %}"><i class="fas fa-home"></i> Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>{{ product.productBrand }}</span>
+        <i class="fas fa-chevron-right"></i>
+        <span>{{ product.productName }}</span>
+    </div>
+
+    {% for p in products %}
+    <div class="product-grid">
+        <!-- Image -->
+        <div class="product-img-main">
+            <img src="{{ p.productImage.url }}" alt="{{ p.productName }}">
+        </div>
+
+        <!-- Info -->
+        <div class="product-info">
+            <div class="product-brand-tag"><i class="fas fa-tag"></i> {{ p.productBrand }}</div>
+            <h1 class="product-title">{{ p.productName }}</h1>
+            {% if p.productSpecf %}
+            <div class="product-spec-tag">{{ p.productSpecf }}</div>
+            {% endif %}
+
+            <!-- Rating -->
+            <div class="rating-row">
+                <div class="stars-lg">
+                    {% with avg=p.average_rating %}
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= avg %}
+                        <i class="fas fa-star"></i>
+                        {% elif forloop.counter|add:"-0.5" <= avg %}
+                        <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                        <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span style="color:var(--text); font-size:14px; font-weight:700;">{{ avg }}</span>
+                    {% endwith %}
+                </div>
+                <span class="rating-text">{{ reviews|length }} review{{ reviews|length|pluralize }}</span>
+            </div>
+
+            <div class="price-big"><span>₹</span>{{ p.productPrice|floatformat:0 }}</div>
+
+            {% if p.stock > 0 %}
+            <span class="stock-badge in-stock"><i class="fas fa-check-circle"></i> In Stock ({{ p.stock }} available)</span>
+            {% else %}
+            <span class="stock-badge out-stock"><i class="fas fa-times-circle"></i> Out of Stock</span>
+            {% endif %}
+
+            <div class="product-actions">
+                {% if user.is_authenticated %}
+                <a href="{% url 'add_to_cart' p.id %}" class="btn btn-primary">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </a>
+                <a href="{% url 'checkout' %}" class="btn btn-success">
+                    <i class="fas fa-bolt"></i> Buy Now
+                </a>
+                {% else %}
+                <a href="{% url 'signin' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign in to Buy
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="desc-section">
+                <div class="desc-title">Description</div>
+                <div class="desc-text">{{ p.productDesc }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- REVIEWS SECTION -->
+    <div class="reviews-section">
+        <h2 class="section-heading">
+            <i class="fas fa-star" style="color:var(--accent)"></i>
+            Customer Reviews
+            <span class="badge badge-primary" style="font-size:13px">{{ reviews|length }}</span>
+        </h2>
+
+        {% if user.is_authenticated %}
+        <div class="review-form-card">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">
+                {{ user_review|yesno:"Update Your Review,Write a Review" }}
+            </h3>
+            <form method="POST" action="{% url 'add_review' product.productName %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Your Rating</label>
+                    <div class="stars-picker">
+                        {% for i in "54321" %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"
+                               {% if user_review and user_review.rating == i|add:0 %}checked{% endif %}>
+                        <label for="star{{ i }}">★</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Review Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Summarize your experience"
+                           value="{{ user_review.title|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Your Review</label>
+                    <textarea name="body" class="form-control" rows="4" placeholder="Share your detailed thoughts…" required>{{ user_review.body|default:'' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    {{ user_review|yesno:"Update Review,Submit Review" }}
+                </button>
+                {% if user_review %}
+                <a href="{% url 'delete_review' user_review.id %}" class="btn btn-danger" style="margin-left:8px"
+                   onclick="return confirm('Delete your review?')">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+                {% endif %}
+            </form>
+        </div>
+        {% else %}
+        <div class="review-form-card" style="text-align:center; padding:32px">
+            <i class="fas fa-lock" style="font-size:28px;color:var(--text-dim);margin-bottom:12px;display:block"></i>
+            <p style="color:var(--text-muted);margin-bottom:14px">Sign in to leave a review</p>
+            <a href="{% url 'signin' %}" class="btn btn-primary">Sign In</a>
+        </div>
+        {% endif %}
+
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="review-card">
+            <div class="review-header">
+                <div class="reviewer">
+                    <div class="reviewer-avatar">{{ review.user.username|first|upper }}</div>
+                    <div>
+                        <div class="reviewer-name">{{ review.user.get_full_name|default:review.user.username }}</div>
+                        <div class="review-date">{{ review.created_at|date:"d M Y" }}</div>
+                    </div>
+                </div>
+                <div class="stars" style="color:var(--accent)">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                        <i class="fas fa-star"></i>
+                        {% else %}
+                        <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="review-title">{{ review.title }}</div>
+            <div class="review-body">{{ review.body }}</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state" style="padding:40px">
+            <i class="far fa-comment-dots" style="font-size:48px;color:var(--border);display:block;margin-bottom:12px"></i>
+            <p style="color:var(--text-muted)">No reviews yet. Be the first to review!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

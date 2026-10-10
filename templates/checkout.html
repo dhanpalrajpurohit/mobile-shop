@@ -1,0 +1,135 @@
+{% extends 'BASE.html' %}
+{% block title %}Checkout – MobileShop{% endblock %}
+{% block content %}
+
+<style>
+.checkout-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+.page-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+.checkout-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+@media(max-width:768px){ .checkout-grid { grid-template-columns: 1fr; } }
+.checkout-form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+.form-section-title {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--primary-light); margin: 24px 0 14px;
+    padding-top: 20px; border-top: 1px solid var(--border);
+}
+.form-section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.payment-options { display: flex; flex-direction: column; gap: 10px; }
+.payment-option {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s;
+}
+.payment-option:has(input:checked) {
+    border-color: var(--primary); background: rgba(99,102,241,0.1);
+}
+.payment-option input { accent-color: var(--primary); width: 16px; height: 16px; }
+.payment-option-info { flex: 1; }
+.payment-option-label { font-size: 14px; font-weight: 600; }
+.payment-option-desc { font-size: 12px; color: var(--text-muted); }
+.payment-icon { font-size: 20px; width: 32px; text-align: center; }
+.order-summary-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: sticky; top: 88px; height: fit-content; }
+.summary-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.summary-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.summary-item-img { width: 44px; height: 44px; background: var(--bg-card2); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.summary-item-img img { max-width: 36px; max-height: 36px; object-fit: contain; }
+.summary-item-name { font-size: 13px; font-weight: 600; flex: 1; }
+.summary-item-qty { font-size: 12px; color: var(--text-dim); }
+.summary-item-price { font-size: 13px; font-weight: 700; }
+.summary-total-row { display: flex; justify-content: space-between; padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--border); font-size: 18px; font-weight: 800; }
+</style>
+
+<div class="checkout-wrap">
+    <h1 class="page-title">
+        <i class="fas fa-credit-card" style="color:var(--primary)"></i>
+        Checkout
+    </h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="checkout-grid">
+            <!-- Form -->
+            <div class="checkout-form-card">
+                <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Delivery Information</div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" value="{{ user.get_full_name }}" placeholder="{{ user.username }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number *</label>
+                    <input type="tel" name="phone" class="form-control" placeholder="+91 9999999999" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Shipping Address *</label>
+                    <textarea name="address" class="form-control" rows="3"
+                              placeholder="House No, Street, City, State, PIN Code" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Order Notes (optional)</label>
+                    <input type="text" name="notes" class="form-control" placeholder="Any special instructions…">
+                </div>
+
+                <div class="form-section-title"><i class="fas fa-wallet"></i> Payment Method</div>
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="cod" checked>
+                        <span class="payment-icon">💵</span>
+                        <div class="payment-option-info">
+                            <div class="payment-option-label">Cash on Delivery</div>
+                            <div class="payment-option-desc">Pay when your order arrives</div>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="online">
+                        <span class="payment-icon">🔗</span>
+                        <div class="payment-option-info">
+                            <div class="payment-option-label">Online Payment (UPI/Net Banking)</div>
+                            <div class="payment-option-desc">PhonePe, GPay, BHIM, Net Banking</div>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="card">
+                        <span class="payment-icon">💳</span>
+                        <div class="payment-option-info">
+                            <div class="payment-option-label">Credit / Debit Card</div>
+                            <div class="payment-option-desc">Visa, Mastercard, RuPay</div>
+                        </div>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;margin-top:24px;font-size:16px;padding:14px">
+                    <i class="fas fa-check-circle"></i> Place Order – ₹{{ total|floatformat:0 }}
+                </button>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary-card">
+                <div class="summary-title">Your Order</div>
+                {% for item in cart_items %}
+                <div class="summary-item">
+                    <div class="summary-item-img">
+                        <img src="{{ item.product.productImage.url }}" alt="{{ item.product.productName }}">
+                    </div>
+                    <div class="summary-item-info">
+                        <div class="summary-item-name">{{ item.product.productName }}</div>
+                        <div class="summary-item-qty">Qty: {{ item.quantity }}</div>
+                    </div>
+                    <div class="summary-item-price">₹{{ item.subtotal|floatformat:0 }}</div>
+                </div>
+                {% endfor %}
+                <div class="summary-total-row">
+                    <span>Total</span>
+                    <span style="color:var(--primary-light)">₹{{ total|floatformat:0 }}</span>
+                </div>
+                <div style="margin-top:14px;padding:12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-size:12px;color:#6ee7b7">
+                    <i class="fas fa-truck"></i> FREE Delivery on all orders
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

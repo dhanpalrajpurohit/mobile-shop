@@ -1,0 +1,30 @@
+{% block content_filter %}
+<span class="border border-right" >
+    <div class="col-2 position-fixed pt-2">
+      <h4 class="text-center">Filter</h4><hr>
+      <div><input type="text" name=txt_searchbox placeholder="Search Brand Name"></div><hr>
+      <div class="range pt-2">
+        <h6 class="text-center">Price Range</h6>
+        <div><input type="checkbox" name="ckb_10k">  Below 10K</div>
+        <div><input type="checkbox" name="ckb_20k">  Between 10K-30K</div>
+        <div><input type="checkbox" name="ckb_30k">  Above 30K</div>
+      </div><hr>
+  
+    
+      
+      <div class="companywise pt-2">
+          <h6 class="text-center">Brand Name</h6>
+          {% for productBrands in data %}
+          <div><a href="/?productbrand={{productBrands.productBrandName}}">{{productBrands}}</a></div>
+          <!--<div><input type="checkbox" name="asus">  Ausu</div>
+          <div><input type="checkbox" name="nokia">  Nokia</div>
+          <div><input type="checkbox" name="google">  Google</div>
+          <div><input type="checkbox" name="oppo">  Oppo</div>
+          <div><input type="checkbox" name="vivo">  Vivo</div>
+          <div><input type="checkbox" name="oneplus">  OnePlus</div>-->
+        </div><hr>
+        {% endfor %}
+  
+    </div>
+  </span>
+  {% endblock %}

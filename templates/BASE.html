@@ -1,0 +1,377 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MobileShop – Premium Mobile Store{% endblock %}</title>
+    <meta name="description" content="{% block meta_desc %}Shop the latest smartphones at the best prices. Fast delivery, easy returns.{% endblock %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #0f0f13;
+            --bg-card: #1a1a24;
+            --bg-card2: #22222f;
+            --border: rgba(255,255,255,0.08);
+            --text: #f1f1f5;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --glass: rgba(255,255,255,0.04);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(15,15,19,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s;
+        }
+        .nav-brand {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .nav-brand-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .nav-brand-text {
+            font-size: 20px; font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-links {
+            display: flex; align-items: center; gap: 4px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none;
+            padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); background: var(--glass); }
+        .nav-links a.active { color: var(--primary-light); }
+        .nav-right {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .nav-cart-btn {
+            position: relative; text-decoration: none;
+            color: var(--text); background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 500;
+            display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .nav-cart-btn:hover { background: var(--bg-card2); color: var(--text); }
+        .cart-badge {
+            background: var(--primary); color: white; font-size: 10px; font-weight: 700;
+            width: 18px; height: 18px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-nav-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: white; text-decoration: none;
+            padding: 8px 18px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            transition: all 0.2s; border: none; cursor: pointer;
+        }
+        .btn-nav-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-nav-ghost {
+            background: transparent; color: var(--text-muted);
+            text-decoration: none; padding: 8px 14px; border-radius: 10px;
+            font-size: 14px; font-weight: 500;
+            border: 1px solid var(--border); transition: all 0.2s;
+        }
+        .btn-nav-ghost:hover { color: var(--text); border-color: var(--primary); }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: white;
+        }
+        .dropdown-menu {
+            position: absolute; top: calc(100% + 8px); right: 0; z-index: 1100;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 8px;
+            min-width: 180px; box-shadow: var(--shadow);
+            display: none;
+        }
+        .dropdown-menu::before {
+            content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 10px;
+        }
+        .dropdown.open .dropdown-menu,
+        .dropdown:focus-within .dropdown-menu { display: block; }
+        .dropdown-toggle { border: 0; padding: 0; font-family: inherit; }
+        .dropdown-menu a {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-muted); text-decoration: none;
+            padding: 8px 12px; border-radius: 8px; font-size: 13px;
+            transition: all 0.15s;
+        }
+        .dropdown-menu a:hover { background: var(--glass); color: var(--text); }
+        .dropdown { position: relative; }
+
+        /* ── PAGE WRAPPER ── */
+        .page-wrap {
+            padding-top: 68px;
+            min-height: 100vh;
+        }
+
+        /* ── MESSAGES ── */
+        .messages-wrap {
+            position: fixed; top: 80px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 8px; max-width: 340px;
+        }
+        .msg {
+            padding: 12px 16px; border-radius: var(--radius-sm);
+            font-size: 13px; font-weight: 500;
+            display: flex; align-items: center; gap: 8px;
+            animation: slideIn 0.3s ease; box-shadow: var(--shadow);
+        }
+        .msg-success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+        .msg-error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+        .msg-warning { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+        .msg-info { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: var(--primary-light); }
+        @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; text-decoration: none; border: none; transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: white;
+        }
+        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+        .btn-outline {
+            background: transparent; color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-danger {
+            background: rgba(239,68,68,0.15); color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+        .btn-success:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px;
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: rgba(99,102,241,0.3); }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .badge-primary { background: rgba(99,102,241,0.2); color: var(--primary-light); }
+        .badge-success { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+        .badge-warning { background: rgba(245,158,11,0.2); color: #fcd34d; }
+        .badge-danger { background: rgba(239,68,68,0.2); color: #fca5a5; }
+        .badge-muted { background: rgba(107,114,128,0.2); color: var(--text-muted); }
+
+        /* ── FORMS ── */
+        .form-group { margin-bottom: 18px; }
+        .form-label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        .form-control {
+            width: 100%; padding: 10px 14px; background: var(--bg-card2);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+        select.form-control option { background: var(--bg-card2); }
+
+        /* ── SECTION ── */
+        .section { padding: 60px 24px; max-width: 1280px; margin: 0 auto; }
+        .section-sm { padding: 32px 24px; max-width: 1280px; margin: 0 auto; }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: var(--bg-card); border-top: 1px solid var(--border);
+            padding: 32px 24px; text-align: center;
+        }
+        .footer p { color: var(--text-dim); font-size: 13px; }
+        .footer a { color: var(--primary-light); text-decoration: none; }
+
+        /* ── STARS ── */
+        .stars { color: var(--accent); font-size: 13px; }
+        .stars-input label { cursor: pointer; color: var(--text-dim); font-size: 24px; transition: color 0.15s; }
+        .stars-input input { display: none; }
+        .stars-input:hover label { color: var(--accent); }
+        .stars-input label:hover ~ label { color: var(--text-dim); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .nav-brand-text { font-size: 16px; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="{% url 'index' %}" class="nav-brand">
+        <div class="nav-brand-icon">📱</div>
+        <span class="nav-brand-text">MobileShop</span>
+    </a>
+
+    <ul class="nav-links">
+        <li><a href="{% url 'index' %}"><i class="fas fa-home"></i> Home</a></li>
+        {% if user.is_authenticated and user.is_staff and not user.is_superuser %}
+        <li><a href="{% url 'admin_panel_dashboard' %}"><i class="fas fa-gauge-high"></i> Admin</a></li>
+        {% elif user.is_authenticated %}
+        <li><a href="{% url 'my_orders' %}"><i class="fas fa-box"></i> My Orders</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="nav-right">
+        {% if user.is_authenticated %}
+        {% if not user.is_superuser %}
+        <a href="{% url 'cart' %}" class="nav-cart-btn">
+            <i class="fas fa-shopping-cart"></i>
+            Cart
+            {% if cart_count %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+        </a>
+        {% endif %}
+        <div class="dropdown">
+            <button class="user-avatar dropdown-toggle" type="button" aria-expanded="false" aria-controls="user-menu" aria-label="Open profile menu">
+                {{ user.username|first|upper }}
+            </button>
+            <div class="dropdown-menu" id="user-menu">
+                <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                {% if user.is_staff and not user.is_superuser %}
+                <a href="{% url 'admin_panel_dashboard' %}"><i class="fas fa-gauge-high"></i> Admin Panel</a>
+                {% endif %}
+                {% if user.is_superuser %}
+                <a href="/admin/"><i class="fas fa-shield-alt"></i> Django Admin</a>
+                {% endif %}
+                {% if not user.is_superuser %}
+                <a href="{% url 'my_orders' %}"><i class="fas fa-box"></i> My Orders</a>
+                {% endif %}
+                <form method="POST" action="{% url 'logout' %}" style="margin:0;padding:0">{% csrf_token %}<button type="submit" style="width:100%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;color:#fca5a5;padding:8px 12px;border-radius:8px;font-size:13px;font-family:inherit;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
+            </div>
+        </div>
+        {% else %}
+        <a href="{% url 'signin' %}" class="btn-nav-ghost">Sign In</a>
+        <a href="{% url 'signup' %}" class="btn-nav-primary">Sign Up</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div class="messages-wrap">
+    {% for msg in messages %}
+    <div class="msg msg-{{ msg.tags }}">
+        {% if msg.tags == 'success' %}<i class="fas fa-check-circle"></i>
+        {% elif msg.tags == 'error' %}<i class="fas fa-exclamation-circle"></i>
+        {% elif msg.tags == 'warning' %}<i class="fas fa-exclamation-triangle"></i>
+        {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+        {{ msg }}
+    </div>
+    {% endfor %}
+</div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.msg').forEach(el => {
+            el.style.opacity = '0'; el.style.transform = 'translateX(20px)';
+            setTimeout(() => el.remove(), 300);
+        });
+    }, 4000);
+</script>
+{% endif %}
+
+<!-- PAGE CONTENT -->
+<div class="page-wrap">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 <strong>MobileShop</strong> — Premium Smartphones &amp; Accessories.
+    Built with ❤️ | <a href="/admin/">Admin</a></p>
+</footer>
+
+{% block extra_js %}{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdown = document.querySelector('.nav-right .dropdown');
+        if (!dropdown) return;
+
+        const toggle = dropdown.querySelector('.dropdown-toggle');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        if (!toggle || !menu) return;
+
+        function closeMenu() {
+            dropdown.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        toggle.addEventListener('click', function () {
+            const isOpen = dropdown.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!dropdown.contains(event.target)) closeMenu();
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeMenu();
+                toggle.focus();
+            }
+        });
+    });
+</script>
+</body>
+</html>

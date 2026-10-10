@@ -1,0 +1,35 @@
+{% extends "manager/base.html" %}
+{% block page_title %}Products{% endblock %}
+{% block page_subtitle %}Add and update the products available in your store.{% endblock %}
+{% block page_icon %}fa-mobile-alt{% endblock %}
+{% block heading_action %}<a class="btn btn-primary" href="{% url 'admin_panel_product_create' %}"><i class="fas fa-plus"></i> Add product</a>{% endblock %}
+{% block panel_content %}
+<div class="manager-toolbar">
+    <form method="get">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search products" aria-label="Search products">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+    <span class="products-count">{{ products|length }} product{{ products|length|pluralize }}</span>
+</div>
+<section class="manager-card">
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Product</th><th>Brand</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td><strong>{{ product.productName }}</strong><small>{{ product.productSpecf|default:"" }}</small></td>
+                    <td>{{ product.productBrand }}</td>
+                    <td>₹{{ product.productPrice|floatformat:0 }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td><div class="manager-actions">
+                        <a class="btn btn-outline btn-sm" href="{% url 'admin_panel_product_update' product.id %}">Edit</a>
+                        <form method="post" action="{% url 'admin_panel_product_delete' product.id %}" onsubmit="return confirm('Delete this product?');">{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Delete</button></form>
+                    </div></td>
+                </tr>
+                {% empty %}<tr><td class="manager-empty" colspan="5">No products found.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

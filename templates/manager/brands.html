@@ -1,0 +1,26 @@
+{% extends "manager/base.html" %}
+{% block page_title %}Product brands{% endblock %}
+{% block page_subtitle %}Organize products by the brands customers shop.{% endblock %}
+{% block page_icon %}fa-tags{% endblock %}
+{% block heading_action %}<a class="btn btn-primary" href="{% url 'admin_panel_brand_create' %}"><i class="fas fa-plus"></i> Add brand</a>{% endblock %}
+{% block panel_content %}
+<section class="manager-card">
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Brand</th><th>Products</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for brand in brands %}
+                <tr>
+                    <td><strong>{{ brand.ProductBrand }}</strong></td>
+                    <td>{{ brand.product_count }}</td>
+                    <td><div class="manager-actions">
+                        <a class="btn btn-outline btn-sm" href="{% url 'admin_panel_brand_update' brand.id %}">Edit</a>
+                        <form method="post" action="{% url 'admin_panel_brand_delete' brand.id %}" onsubmit="return confirm('Delete this brand?');">{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit" {% if brand.product_count %}disabled title="This brand still has products"{% endif %}>Delete</button></form>
+                    </div></td>
+                </tr>
+                {% empty %}<tr><td class="manager-empty" colspan="3">No brands have been added.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

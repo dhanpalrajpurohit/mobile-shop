@@ -1,0 +1,171 @@
+{% extends "manager/base.html" %}
+{% block page_title %}Store dashboard{% endblock %}
+{% block page_subtitle %}A quick overview of store performance and activity.{% endblock %}
+{% block panel_content %}
+<section class="manager-stats">
+    <article class="manager-stat"><div class="manager-stat-label">Total revenue</div><div class="manager-stat-value primary">₹{{ total_revenue|floatformat:0 }}</div></article>
+    <article class="manager-stat"><div class="manager-stat-label">Orders</div><div class="manager-stat-value">{{ total_orders }}</div></article>
+    <article class="manager-stat"><div class="manager-stat-label">Products</div><div class="manager-stat-value">{{ total_products }}</div></article>
+    <article class="manager-stat"><div class="manager-stat-label">Pending orders</div><div class="manager-stat-value warning">{{ pending_orders }}</div></article>
+</section>
+
+<section class="manager-chart-grid">
+    <article class="manager-card">
+        <div class="manager-card-heading"><h2><i class="fas fa-chart-line"></i> Revenue trend</h2></div>
+        <div class="manager-chart"><canvas id="managerRevenueChart" aria-label="Revenue trend by month"></canvas></div>
+    </article>
+    <article class="manager-card">
+        <div class="manager-card-heading"><h2><i class="fas fa-chart-pie"></i> Order status</h2></div>
+        <div class="manager-chart compact"><canvas id="managerStatusChart" aria-label="Orders grouped by status"></canvas></div>
+    </article>
+</section>
+<section class="manager-card">
+    <div class="manager-card-heading"><h2><i class="fas fa-chart-column"></i> Orders per month</h2></div>
+    <div class="manager-chart"><canvas id="managerOrdersChart" aria-label="Orders per month"></canvas></div>
+</section>
+
+<section class="manager-card">
+    <div class="manager-card-heading">
+        <h2><i class="fas fa-clock"></i> Recent orders</h2>
+        <a href="{% url 'admin_panel_orders' %}" class="btn btn-primary btn-sm">View all</a>
+    </div>
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td><a href="{% url 'admin_panel_order_update' order.id %}">INV-{{ order.id|stringformat:"05d" }}</a></td>
+                    <td>{{ order.user.get_full_name|default:order.user.username }}<small>{{ order.user.email }}</small></td>
+                    <td>{{ order.order_date|date:"d M Y, h:i A" }}</td>
+                    <td><strong>₹{{ order.total_amount|floatformat:0 }}</strong></td>
+                    <td><span class="badge {% if order.status == 'delivered' %}badge-success{% elif order.status == 'cancelled' %}badge-danger{% elif order.status == 'pending' %}badge-warning{% else %}badge-primary{% endif %}">{{ order.get_status_display }}</span></td>
+                    <td><a class="btn btn-outline btn-sm" href="{% url 'admin_panel_order_update' order.id %}">Update</a></td>
+                </tr>
+                {% empty %}<tr><td class="manager-empty" colspan="6">No orders have been placed yet.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="manager-card">
+    <div class="manager-card-heading"><h2><i class="fas fa-fire"></i> Top selling products</h2></div>
+    <div class="manager-table-scroll">
+        <table class="manager-table">
+            <thead><tr><th>Product</th><th>Brand</th><th>Units sold</th><th>Revenue</th></tr></thead>
+            <tbody>
+                {% for item in top_products %}
+                <tr><td>{{ item.product__productName }}</td><td>{{ item.product__productBrand__ProductBrand }}</td><td>{{ item.total_qty }}</td><td><strong>₹{{ item.total_revenue|floatformat:0 }}</strong></td></tr>
+                {% empty %}<tr><td class="manager-empty" colspan="4">Sales will appear here after the first order.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const labels = {{ labels|safe }};
+    const revenue = {{ revenue_data|safe }};
+    const orderTotals = {{ order_data|safe }};
+    const statuses = {{ status_counts|safe }};
+    const axisColor = '#9ca3af';
+    const gridColor = 'rgba(255,255,255,0.08)';
+    const colors = ['#f59e0b', '#6366f1', '#818cf8', '#10b981', '#ef4444'];
+
+    Chart.defaults.color = axisColor;
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.plugins.tooltip.backgroundColor = '#22222f';
+    Chart.defaults.plugins.tooltip.titleColor = '#f1f1f5';
+    Chart.defaults.plugins.tooltip.bodyColor = '#f1f1f5';
+    Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.08)';
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+    const revenueCanvas = document.getElementById('managerRevenueChart');
+    const revenueContext = revenueCanvas.getContext('2d');
+    const gradient = revenueContext.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(99,102,241,0.35)');
+    gradient.addColorStop(1, 'rgba(99,102,241,0)');
+    new Chart(revenueContext, {
+        type: 'line',
+        data: { labels, datasets: [{
+            label: 'Revenue (₹)',
+            data: revenue,
+            borderColor: '#818cf8',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointBackgroundColor: '#a5b4fc'
+        }]},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: axisColor } },
+                y: { beginAtZero: true, grid: { color: gridColor }, ticks: {
+                    color: axisColor,
+                    callback: value => '₹' + Number(value).toLocaleString('en-IN')
+                }}
+            },
+            plugins: { legend: { display: false }}
+        }
+    });
+
+    new Chart(document.getElementById('managerOrdersChart'), {
+        type: 'bar',
+        data: { labels, datasets: [{
+            label: 'Orders',
+            data: orderTotals,
+            backgroundColor: 'rgba(99,102,241,0.75)',
+            borderColor: '#818cf8',
+            borderWidth: 1,
+            borderRadius: 7
+        }]},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { grid: { display: false }, ticks: { color: axisColor } },
+                y: { beginAtZero: true, grid: { color: gridColor }, ticks: {
+                    color: axisColor,
+                    precision: 0
+                }}
+            },
+            plugins: { legend: { display: false }}
+        }
+    });
+
+    new Chart(document.getElementById('managerStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],
+            datasets: [{
+                data: [
+                    statuses.pending || 0,
+                    statuses.confirmed || 0,
+                    statuses.shipped || 0,
+                    statuses.delivered || 0,
+                    statuses.cancelled || 0
+                ],
+                backgroundColor: colors,
+                borderColor: '#1a1a24',
+                borderWidth: 3,
+                hoverOffset: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: { legend: {
+                position: 'bottom',
+                labels: { color: axisColor, padding: 14, usePointStyle: true }
+            }}
+        }
+    });
+});
+</script>
+{% endblock %}

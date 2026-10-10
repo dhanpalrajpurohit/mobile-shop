@@ -1,0 +1,43 @@
+venv/
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+.vscode
+.idea
+# Django
+*.log
+*.pot
+*.pyo
+*.pyd
+
+# virtual environment
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Database
+db.sqlite3
+db.sqlite3-*
+
+# Environment variables
+.env
+*.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Media / User uploads
+/media/
+/static/
+!/static/
+/static/*
+!/static/css/
+/static/css/*
+!/static/css/admin_custom.css
+!/static/css/manager_panel.css
